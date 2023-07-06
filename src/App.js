@@ -3,21 +3,39 @@ import "./App.css";
 import Navbar from "./Components/Navbar";
 import Card from "./Components/Card";
 import UploadForm from "./Components/Uploadform";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useReducer } from "react";
 //import React from "react";
 const photos = [
-  "https://picsum.photos/id/1001/200/200",
-  "https://picsum.photos/id/1002/200/200",
-  "https://picsum.photos/id/1003/200/200",
-  "https://picsum.photos/id/1004/200/200",
-  "https://picsum.photos/id/1005/200/200",
-  "https://picsum.photos/id/1006/200/200",
-  "https://picsum.photos/id/1010/200/200",
-  "https://picsum.photos/id/1008/200/200",
-  "https://picsum.photos/id/1009/200/200",
+  // "https://picsum.photos/id/1001/200/200",
+  // "https://picsum.photos/id/1002/200/200",
+  // "https://picsum.photos/id/1003/200/200",
+  // "https://picsum.photos/id/1004/200/200",
+  // "https://picsum.photos/id/1005/200/200",
+  // "https://picsum.photos/id/1006/200/200",
+  // "https://picsum.photos/id/1010/200/200",
+  // "https://picsum.photos/id/1008/200/200",
+  // "https://picsum.photos/id/1009/200/200",
 ];
 
+const initialState = {
+  items: photos,
+  count: photos.length,
+  inputs: { title: null, file: null, path: null },
+  isCollapsed: false,
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "setItem":
+      return {
+        ...state,
+        items: [action.payload.path, ...state.items],
+      };
+  }
+}
+
 function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
   const [count, setCount] = useState();
   const [inputs, setInputs] = useState({ title: null, file: null, path: null });
   const [items, setItems] = useState(photos);
@@ -35,14 +53,23 @@ function App() {
   };
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    setItems([inputs.path, ...items]);
+    //setItems([inputs.path, ...items]);
+    dispatch({ type: "setItem", payload: { path: inputs } });
     setInputs({ title: null, file: null, path: null });
     collapse(false);
   };
 
   useEffect(() => {
-    setCount(`You have ${items.length} images${items.length > 1 ? `s` : ``}`);
-  }, [items]);
+    console.log(state);
+  }, [state.items]);
+
+  useEffect(() => {
+    setCount(
+      `You have ${state.items.length} images${
+        state.items.length > 1 ? `s` : ``
+      }`
+    );
+  }, [state.items]);
   const toggle = () => {
     collapse(!isCollapsed);
   };
@@ -63,8 +90,8 @@ function App() {
         <h1>Gallery</h1>
         {count}
         <div className="row">
-          {items.map((photo, index) => (
-            <Card key={index} src={photo} />
+          {state.items.map((photo, index) => (
+            <Card key={index} src={photo.path} />
           ))}
         </div>
       </div>
