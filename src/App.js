@@ -36,6 +36,8 @@ function App() {
   const handleOnSubmit = (e) => {
     e.preventDefault();
     setItems([inputs.path, ...items]);
+    setInputs({ title: null, file: null, path: null });
+    collapse(false);
   };
 
   useEffect(() => {
@@ -53,6 +55,7 @@ function App() {
         </button>
         <div className="clearfix mb-4"></div>
         <UploadForm
+          inputs={inputs}
           isVisible={isCollapsed}
           onChange={handleOnChange}
           onSubmit={handleOnSubmit}
